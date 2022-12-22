@@ -40,6 +40,8 @@ class RegisterPage(FormView):
         if self.request.user.is_authenticated:
             return redirect('tasks')
         return super(RegisterPage, self).get(*args, **kwargs)
+    
+
 # Create your views here.
 # This is connected to urls.py and can accessed through there as well
 # This looks for _list
@@ -52,6 +54,12 @@ class TaskList(LoginRequiredMixin, ListView):
         context = super().get_context_data(**kwargs)
         context['tasks'] = context['tasks'].filter(user=self.request.user)
         context['count'] = context['tasks'].filter(complete=False).count()
+        
+        search_input = self.request.GET.get('search-area') or ''
+        if search_input:
+            context['tasks'] = context['tasks'].filter(title__startswith=search_input)
+        
+        context['search_input'] = search_input  
         return context
          
 
